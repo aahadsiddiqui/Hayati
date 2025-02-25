@@ -46,6 +46,7 @@ const CostCalculator = () => {
   const [showError, setShowError] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [date, setDate] = useState<Date>();
+  const [shishaInput, setShishaInput] = useState<string>('3');
 
   const totalShishas = selectedHeads.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -100,7 +101,7 @@ const CostCalculator = () => {
 
   useEffect(() => {
     if (totalShishas < 3) {
-      setShowError('Minimum of 3 Shishas required');
+      setShowError('Minimum 3 Shishas for Bookings');
     } else {
       setShowError('');
     }
@@ -193,10 +194,19 @@ const CostCalculator = () => {
                       <input
                         type="number"
                         min="3"
-                        value={totalShishas}
+                        value={shishaInput}
                         onChange={(e) => {
-                          const value = Math.max(3, parseInt(e.target.value) || 3);
-                          setSelectedHeads([{ type: 'regular', quantity: value }]);
+                          const inputValue = e.target.value;
+                          setShishaInput(inputValue);
+                          
+                          const numValue = parseInt(inputValue);
+                          if (!isNaN(numValue) && numValue >= 3) {
+                            setSelectedHeads([{ type: 'regular', quantity: numValue }]);
+                            setShowError('');
+                          } else {
+                            setSelectedHeads([{ type: 'regular', quantity: 3 }]);
+                            setShowError('Minimum 3 Shishas for Bookings');
+                          }
                         }}
                         className="w-full p-3 border-2 border-prussian/20 rounded-lg focus:border-lion
                                  focus:outline-none focus:ring-2 focus:ring-lion/50"
