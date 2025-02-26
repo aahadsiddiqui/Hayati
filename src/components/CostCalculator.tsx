@@ -317,7 +317,10 @@ const CostCalculator = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         packageSummary={{
-          selectedHeads,
+          selectedHeads: [{ 
+            type: 'regular', 
+            quantity: parseInt(shishaInput) || 3 
+          }],
           hours,
           totalCost: calculateTotal(),
           date

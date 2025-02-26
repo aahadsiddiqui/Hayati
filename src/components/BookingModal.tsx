@@ -62,22 +62,33 @@ const BookingModal = ({ isOpen, onClose, packageSummary }: BookingModalProps) =>
               {/* Package Summary */}
               <div className="bg-prussian/5 rounded-lg p-4">
                 <h4 className="font-semibold mb-3">Package Summary</h4>
-                {packageSummary.selectedHeads.map((head, index) => (
-                  <div key={index} className="flex justify-between text-sm">
-                    <span>{head.quantity}x {HEAD_OPTIONS.find(h => h.type === head.type)?.name}</span>
-                    <span>${HEAD_OPTIONS.find(h => h.type === head.type)?.price! * head.quantity}</span>
-                  </div>
-                ))}
-                {packageSummary.date && (
+                <div className="space-y-2">
+                  {/* Shisha Details */}
                   <div className="flex justify-between text-sm">
-                    <span>Event Date</span>
-                    <span>{format(packageSummary.date, 'PPP')}</span>
+                    <span>{packageSummary.selectedHeads[0]?.quantity || 3}x Regular Head</span>
+                    <span>${(packageSummary.selectedHeads[0]?.quantity || 3) * 100}</span>
                   </div>
-                )}
-                <div className="mt-2 pt-2 border-t border-prussian/10">
-                  <div className="flex justify-between font-semibold">
-                    <span>Total</span>
-                    <span>${packageSummary.totalCost}</span>
+                  
+                  {/* Duration */}
+                  <div className="flex justify-between text-sm">
+                    <span>Duration</span>
+                    <span>{packageSummary.hours} hours</span>
+                  </div>
+
+                  {/* Event Date if selected */}
+                  {packageSummary.date && (
+                    <div className="flex justify-between text-sm">
+                      <span>Event Date</span>
+                      <span>{format(packageSummary.date, 'PPP')}</span>
+                    </div>
+                  )}
+
+                  {/* Total */}
+                  <div className="mt-4 pt-2 border-t border-prussian/10">
+                    <div className="flex justify-between font-semibold">
+                      <span>Total</span>
+                      <span>${packageSummary.totalCost}</span>
+                    </div>
                   </div>
                 </div>
               </div>
