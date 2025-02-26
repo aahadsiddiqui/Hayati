@@ -5,6 +5,7 @@ import { Calendar } from "./ui/calendar";
 const ContactForm = () => {
   const [formData, setFormData] = useState({
     name: '',
+    phone: '',
     eventAddress: '',
     eventDescription: '',
   });
@@ -50,6 +51,19 @@ const ContactForm = () => {
               onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
               className="w-full p-4 bg-prussian-dark/20 border border-platinum/20 rounded-lg
                        placeholder:text-platinum/50 focus:outline-none focus:border-lion"
+            />
+          </div>
+
+          <div>
+            <label className="text-lg mb-2 block">Phone Number</label>
+            <input
+              type="tel"
+              required
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              placeholder="Enter your phone number"
+              className="w-full p-3 border-2 border-prussian/20 rounded-lg bg-transparent
+                       text-platinum placeholder:text-platinum/50 focus:outline-none focus:border-lion"
             />
           </div>
 

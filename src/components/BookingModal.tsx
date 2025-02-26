@@ -19,6 +19,8 @@ interface BookingModalProps {
 const BookingModal = ({ isOpen, onClose, packageSummary }: BookingModalProps) => {
   const [formData, setFormData] = useState({
     name: '',
+    phone: '',
+    email: '',
     eventAddress: '',
     eventDescription: ''
   });
@@ -91,6 +93,19 @@ const BookingModal = ({ isOpen, onClose, packageSummary }: BookingModalProps) =>
                     onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
                     className="w-full p-3 border border-prussian/20 rounded-lg focus:border-lion
                              focus:outline-none focus:ring-2 focus:ring-lion/50"
+                  />
+                </div>
+                <div>
+                  <label className="text-prussian text-sm font-medium mb-1 block">
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    placeholder="Enter your phone number"
+                    className="w-full p-3 border border-prussian/20 rounded-lg focus:outline-none focus:border-lion"
                   />
                 </div>
                 <div>

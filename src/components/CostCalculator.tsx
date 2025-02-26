@@ -93,19 +93,22 @@ const CostCalculator = () => {
 
   // Calculate total cost
   const calculateTotal = () => {
-    return selectedHeads.reduce((total, item) => {
-      const headPrice = HEAD_OPTIONS.find(h => h.type === item.type)?.price || 0;
-      return total + (headPrice * item.quantity);
-    }, 0);
+    if (selectedHeads.length === 0) {
+      return 0;
+    }
+    // Use the shishaInput value for quantity
+    const numShishas = parseInt(shishaInput) || 3;
+    return HEAD_OPTIONS.find(h => h.type === 'regular')?.price! * numShishas;
   };
 
   useEffect(() => {
-    if (totalShishas < 3) {
+    const numShishas = parseInt(shishaInput) || 3;
+    if (numShishas < 3) {
       setShowError('Minimum 3 Shishas for Bookings');
     } else {
       setShowError('');
     }
-  }, [totalShishas]);
+  }, [shishaInput]);
 
   return (
     <section id="calculator-section" className="bg-gradient-to-b from-platinum to-white py-20">
@@ -200,12 +203,10 @@ const CostCalculator = () => {
                           setShishaInput(inputValue);
                           
                           const numValue = parseInt(inputValue);
-                          if (!isNaN(numValue) && numValue >= 3) {
+                          if (!isNaN(numValue)) {
                             setSelectedHeads([{ type: 'regular', quantity: numValue }]);
-                            setShowError('');
                           } else {
                             setSelectedHeads([{ type: 'regular', quantity: 3 }]);
-                            setShowError('Minimum 3 Shishas for Bookings');
                           }
                         }}
                         className="w-full p-3 border-2 border-prussian/20 rounded-lg focus:border-lion
@@ -248,12 +249,10 @@ const CostCalculator = () => {
               <h3 className="text-2xl font-bold mb-8">Your Package Summary</h3>
               
               <div className="space-y-4 mb-8">
-                {selectedHeads.map((item, index) => (
-                  <div key={index} className="flex justify-between items-center">
-                    <span>{HEAD_OPTIONS.find(h => h.type === item.type)?.name}</span>
-                    <span className="font-semibold">x{item.quantity}</span>
-                  </div>
-                ))}
+                <div className="flex justify-between items-center">
+                  <span>Regular Head</span>
+                  <span className="font-semibold">x{parseInt(shishaInput) || 3}</span>
+                </div>
                 <div className="flex justify-between items-center">
                   <span>Duration</span>
                   <span className="font-semibold">{hours} hours</span>
@@ -296,10 +295,15 @@ const CostCalculator = () => {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => totalShishas >= 3 && setIsModalOpen(true)}
+                onClick={() => {
+                  const numShishas = parseInt(shishaInput) || 3;
+                  if (numShishas >= 3) {
+                    setIsModalOpen(true);
+                  }
+                }}
                 className="w-full mt-8 bg-lion text-white py-4 rounded-lg font-medium
                          hover:bg-lion/90 transition-all duration-300"
-                disabled={totalShishas < 3}
+                disabled={parseInt(shishaInput) < 3}
               >
                 Book Now
               </motion.button>
