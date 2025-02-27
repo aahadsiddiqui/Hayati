@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar } from "./ui/calendar";
+import { format } from 'date-fns';
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({
@@ -38,13 +39,15 @@ const ContactForm = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          onSubmit={handleSubmit}
+          action="https://formspree.io/f/xpwqgvla"
+          method="POST"
           className="space-y-6"
         >
           <div>
             <label className="block text-lg mb-2">Name</label>
             <input
               type="text"
+              name="name"
               required
               placeholder="Your full name"
               value={formData.name}
@@ -58,6 +61,7 @@ const ContactForm = () => {
             <label className="text-lg mb-2 block">Phone Number</label>
             <input
               type="tel"
+              name="phone"
               required
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -71,6 +75,7 @@ const ContactForm = () => {
             <label className="block text-lg mb-2">Event Address</label>
             <input
               type="text"
+              name="eventAddress"
               required
               placeholder="Where will the event take place?"
               value={formData.eventAddress}
@@ -82,6 +87,11 @@ const ContactForm = () => {
 
           <div>
             <label className="block text-lg mb-2">Event Date</label>
+            <input
+              type="hidden"
+              name="eventDate"
+              value={date ? format(date, 'PPP') : ''}
+            />
             <Calendar
               selected={date}
               onChange={setDate}
@@ -92,6 +102,7 @@ const ContactForm = () => {
           <div>
             <label className="block text-lg mb-2">Event Description</label>
             <textarea
+              name="eventDescription"
               required
               placeholder="Tell us about your event (type, number of guests, special requests...)"
               value={formData.eventDescription}

@@ -75,6 +75,14 @@ const BookingModal = ({ isOpen, onClose, packageSummary }: BookingModalProps) =>
                     <span>{packageSummary.hours} hours</span>
                   </div>
 
+                  {/* Extra Hours Charge */}
+                  {packageSummary.hours > 3 && (
+                    <div className="flex justify-between text-sm text-prussian/70">
+                      <span>Extra Hours Charge</span>
+                      <span>+${(packageSummary.hours - 3) * 100}</span>
+                    </div>
+                  )}
+
                   {/* Event Date if selected */}
                   {packageSummary.date && (
                     <div className="flex justify-between text-sm">
@@ -94,11 +102,22 @@ const BookingModal = ({ isOpen, onClose, packageSummary }: BookingModalProps) =>
               </div>
 
               {/* Booking Form */}
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form 
+                onSubmit={handleSubmit} 
+                action="https://formspree.io/f/xpwqgvla"
+                method="POST"
+                className="space-y-4"
+              >
+                {/* Package Summary as hidden fields */}
+                <input type="hidden" name="packageDetails" value={`${packageSummary.selectedHeads[0]?.quantity || 3}x Regular Head`} />
+                <input type="hidden" name="duration" value={`${packageSummary.hours} hours`} />
+                <input type="hidden" name="totalCost" value={`$${packageSummary.totalCost}`} />
+
                 <div>
                   <label className="block text-sm font-medium mb-1">Name</label>
                   <input
                     type="text"
+                    name="name"
                     required
                     value={formData.name}
                     onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
@@ -112,6 +131,7 @@ const BookingModal = ({ isOpen, onClose, packageSummary }: BookingModalProps) =>
                   </label>
                   <input
                     type="tel"
+                    name="phone"
                     required
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -120,9 +140,22 @@ const BookingModal = ({ isOpen, onClose, packageSummary }: BookingModalProps) =>
                   />
                 </div>
                 <div>
+                  <label className="block text-sm font-medium mb-1">Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    value={formData.email}
+                    onChange={e => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                    className="w-full p-3 border border-prussian/20 rounded-lg focus:border-lion
+                             focus:outline-none focus:ring-2 focus:ring-lion/50"
+                  />
+                </div>
+                <div>
                   <label className="block text-sm font-medium mb-1">Event Address</label>
                   <input
                     type="text"
+                    name="eventAddress"
                     required
                     value={formData.eventAddress}
                     onChange={e => setFormData(prev => ({ ...prev, eventAddress: e.target.value }))}
@@ -133,6 +166,7 @@ const BookingModal = ({ isOpen, onClose, packageSummary }: BookingModalProps) =>
                 <div>
                   <label className="block text-sm font-medium mb-1">Event Description</label>
                   <textarea
+                    name="eventDescription"
                     required
                     value={formData.eventDescription}
                     onChange={e => setFormData(prev => ({ ...prev, eventDescription: e.target.value }))}
@@ -143,6 +177,11 @@ const BookingModal = ({ isOpen, onClose, packageSummary }: BookingModalProps) =>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">Event Date</label>
+                  <input
+                    type="hidden"
+                    name="eventDate"
+                    value={packageSummary.date ? format(packageSummary.date, 'PPP') : ''}
+                  />
                   <div className="relative">
                     <Calendar
                       selected={packageSummary.date}
