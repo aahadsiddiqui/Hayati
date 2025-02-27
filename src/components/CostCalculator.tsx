@@ -94,17 +94,26 @@ const CostCalculator = () => {
   // Calculate total cost
   const calculateTotal = () => {
     if (selectedHeads.length === 0) {
-      return 0;
+      return {
+        subtotal: 0,
+        tax: 0,
+        total: 0
+      };
     }
     
     const numShishas = parseInt(shishaInput) || 3;
     const basePrice = HEAD_OPTIONS.find(h => h.type === 'regular')?.price! * numShishas;
-    
-    // Add $100/hr for each hour after 3 hours
     const extraHours = Math.max(0, hours - 3);
     const extraHoursCost = extraHours * 100;
     
-    return basePrice + extraHoursCost;
+    const subtotal = basePrice + extraHoursCost;
+    const tax = subtotal * 0.13;
+    
+    return {
+      subtotal,
+      tax,
+      total: subtotal + tax
+    };
   };
 
   useEffect(() => {
@@ -269,10 +278,18 @@ const CostCalculator = () => {
                     <span>+${(hours - 3) * 100}</span>
                   </div>
                 )}
-                <div className="border-t border-platinum/20 pt-4">
+                <div className="border-t border-platinum/20 pt-4 space-y-2">
                   <div className="flex justify-between items-center">
+                    <span>Subtotal</span>
+                    <span className="font-semibold">${calculateTotal().subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm text-platinum/80">
+                    <span>Tax (13%)</span>
+                    <span>${calculateTotal().tax.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between items-center pt-2 border-t border-platinum/20">
                     <span className="text-xl">Total Cost</span>
-                    <span className="text-3xl font-bold">${calculateTotal()}</span>
+                    <span className="text-3xl font-bold">${calculateTotal().total.toFixed(2)}</span>
                   </div>
                 </div>
               </div>

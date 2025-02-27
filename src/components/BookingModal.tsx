@@ -4,6 +4,7 @@ import { ShishaSelection } from './CostCalculator';
 import { HEAD_OPTIONS } from './CostCalculator';
 import { Calendar } from "../components/ui/calendar";
 import { format } from "date-fns";
+import { toast } from 'sonner';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -11,7 +12,11 @@ interface BookingModalProps {
   packageSummary: {
     selectedHeads: ShishaSelection[];
     hours: number;
-    totalCost: number;
+    totalCost: {
+      subtotal: number;
+      tax: number;
+      total: number;
+    };
     date?: Date;
   };
 }
@@ -22,14 +27,76 @@ const BookingModal = ({ isOpen, onClose, packageSummary }: BookingModalProps) =>
     phone: '',
     email: '',
     eventAddress: '',
-    eventDescription: ''
+    eventDescription: '',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(packageSummary.date);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log('Booking submitted:', { ...formData, packageSummary });
-    onClose();
+    
+    if (isSubmitting) return;
+    
+    try {
+      setIsSubmitting(true);
+
+      // Validate required fields
+      if (!formData.name || !formData.phone || !formData.email || !formData.eventAddress || !selectedDate) {
+        toast.error("Please fill in all required fields");
+        return;
+      }
+
+      const formPayload = {
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        eventAddress: formData.eventAddress,
+        eventDescription: formData.eventDescription,
+        eventDate: selectedDate ? format(selectedDate, 'PPP') : '',
+        booking: {
+          shishas: `${packageSummary.selectedHeads[0]?.quantity || 3}x Regular Head`,
+          duration: `${packageSummary.hours} hours`,
+          subtotal: `$${packageSummary.totalCost.subtotal.toFixed(2)}`,
+          tax: `$${packageSummary.totalCost.tax.toFixed(2)}`,
+          total: `$${packageSummary.totalCost.total.toFixed(2)}`
+        }
+      };
+
+      const response = await fetch('https://formspree.io/f/xpwqgvla', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(formPayload)
+      });
+
+      if (!response.ok) {
+        throw new Error('Submission failed');
+      }
+
+      toast.success("Booking request received! We'll get back to you soon.");
+      
+      // Reset form
+      setFormData({
+        name: '',
+        phone: '',
+        email: '',
+        eventAddress: '',
+        eventDescription: '',
+      });
+      setSelectedDate(undefined);
+      
+      // Close modal
+      onClose();
+
+    } catch (error) {
+      toast.error("Failed to submit booking. Please try again.");
+      console.error('Booking submission error:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -83,19 +150,19 @@ const BookingModal = ({ isOpen, onClose, packageSummary }: BookingModalProps) =>
                     </div>
                   )}
 
-                  {/* Event Date if selected */}
-                  {packageSummary.date && (
+                  {/* Subtotal, Tax and Total */}
+                  <div className="mt-4 pt-2 border-t border-prussian/10 space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span>Event Date</span>
-                      <span>{format(packageSummary.date, 'PPP')}</span>
+                      <span>Subtotal</span>
+                      <span>${packageSummary.totalCost.subtotal.toFixed(2)}</span>
                     </div>
-                  )}
-
-                  {/* Total */}
-                  <div className="mt-4 pt-2 border-t border-prussian/10">
-                    <div className="flex justify-between font-semibold">
-                      <span>Total</span>
-                      <span>${packageSummary.totalCost}</span>
+                    <div className="flex justify-between text-sm text-prussian/70">
+                      <span>Tax (13%)</span>
+                      <span>${packageSummary.totalCost.tax.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between font-semibold pt-2 border-t border-prussian/10">
+                      <span>Total (with tax)</span>
+                      <span>${packageSummary.totalCost.total.toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
@@ -103,16 +170,9 @@ const BookingModal = ({ isOpen, onClose, packageSummary }: BookingModalProps) =>
 
               {/* Booking Form */}
               <form 
-                onSubmit={handleSubmit} 
-                action="https://formspree.io/f/xpwqgvla"
-                method="POST"
+                onSubmit={handleSubmit}
                 className="space-y-4"
               >
-                {/* Package Summary as hidden fields */}
-                <input type="hidden" name="packageDetails" value={`${packageSummary.selectedHeads[0]?.quantity || 3}x Regular Head`} />
-                <input type="hidden" name="duration" value={`${packageSummary.hours} hours`} />
-                <input type="hidden" name="totalCost" value={`$${packageSummary.totalCost}`} />
-
                 <div>
                   <label className="block text-sm font-medium mb-1">Name</label>
                   <input
@@ -177,16 +237,12 @@ const BookingModal = ({ isOpen, onClose, packageSummary }: BookingModalProps) =>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">Event Date</label>
-                  <input
-                    type="hidden"
-                    name="eventDate"
-                    value={packageSummary.date ? format(packageSummary.date, 'PPP') : ''}
-                  />
                   <div className="relative">
                     <Calendar
-                      selected={packageSummary.date}
+                      selected={selectedDate}
                       onChange={(date) => {
-                        // Handle date selection if needed
+                        setSelectedDate(date);
+                        setFormData(prev => ({ ...prev, eventDate: date }));
                       }}
                       className="rounded-md border border-prussian/20"
                     />
@@ -197,10 +253,12 @@ const BookingModal = ({ isOpen, onClose, packageSummary }: BookingModalProps) =>
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   type="submit"
-                  className="w-full bg-lion text-white py-4 rounded-lg font-medium
-                           hover:bg-lion/90 transition-all duration-300"
+                  disabled={isSubmitting}
+                  className={`w-full bg-lion text-white py-4 rounded-lg font-medium
+                           hover:bg-lion/90 transition-all duration-300 
+                           ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
                 >
-                  Confirm Booking
+                  {isSubmitting ? 'Submitting...' : 'Confirm Booking'}
                 </motion.button>
               </form>
             </div>

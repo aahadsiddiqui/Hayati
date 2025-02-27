@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar } from "./ui/calendar";
 import { format } from 'date-fns';
+import { toast } from 'sonner';
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({
@@ -12,10 +13,27 @@ const ContactForm = () => {
   });
   const [date, setDate] = useState<Date>();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', { ...formData, date });
-    // Handle form submission
+    
+    try {
+      const response = await fetch('https://formspree.io/f/xpwqgvla', {
+        method: 'POST',
+        body: JSON.stringify({ ...formData, date }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        toast.success("Request received. We'll get back to you soon.");
+        // Reset form
+        setFormData({ name: '', phone: '', eventAddress: '', eventDescription: '' });
+        setDate(undefined);
+      }
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+    }
   };
 
   return (
@@ -39,8 +57,7 @@ const ContactForm = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          action="https://formspree.io/f/xpwqgvla"
-          method="POST"
+          onSubmit={handleSubmit}
           className="space-y-6"
         >
           <div>
