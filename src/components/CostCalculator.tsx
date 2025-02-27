@@ -96,9 +96,15 @@ const CostCalculator = () => {
     if (selectedHeads.length === 0) {
       return 0;
     }
-    // Use the shishaInput value for quantity
+    
     const numShishas = parseInt(shishaInput) || 3;
-    return HEAD_OPTIONS.find(h => h.type === 'regular')?.price! * numShishas;
+    const basePrice = HEAD_OPTIONS.find(h => h.type === 'regular')?.price! * numShishas;
+    
+    // Add $100/hr for each hour after 3 hours
+    const extraHours = Math.max(0, hours - 3);
+    const extraHoursCost = extraHours * 100;
+    
+    return basePrice + extraHoursCost;
   };
 
   useEffect(() => {
@@ -257,6 +263,12 @@ const CostCalculator = () => {
                   <span>Duration</span>
                   <span className="font-semibold">{hours} hours</span>
                 </div>
+                {hours > 3 && (
+                  <div className="flex justify-between items-center text-sm text-platinum/80">
+                    <span>Extra Hours Charge</span>
+                    <span>+${(hours - 3) * 100}</span>
+                  </div>
+                )}
                 <div className="border-t border-platinum/20 pt-4">
                   <div className="flex justify-between items-center">
                     <span className="text-xl">Total Cost</span>

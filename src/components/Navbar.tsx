@@ -14,7 +14,7 @@ const Navbar = () => {
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className="fixed w-full h-20 z-50 bg-platinum"
+      className="fixed w-full h-16 z-50 bg-platinum"
     >
       <div className="container mx-auto h-full px-4">
         <div className="flex items-center justify-between h-full">
@@ -28,7 +28,7 @@ const Navbar = () => {
               alt="Hayati Shisha Logo"
               width={64}
               height={64}
-              className="h-20 w-24"
+              className="h-12 w-24"
               priority
             />
           </button>
@@ -40,11 +40,11 @@ const Navbar = () => {
               href="https://www.instagram.com/hayatishishacatering/"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 text-prussian hover:text-lion transition-colors"
+              className="p-1.5 text-prussian hover:text-lion transition-colors"
               aria-label="Instagram"
             >
               <svg 
-                className="w-6 h-6" 
+                className="w-5 h-5" 
                 fill="currentColor" 
                 viewBox="0 0 24 24"
               >
@@ -57,7 +57,7 @@ const Navbar = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => scrollToSection('contact-section')}
-              className="bg-lion text-white px-4 sm:px-6 py-2 rounded-lg text-sm sm:text-base font-medium
+              className="bg-lion text-white px-4 sm:px-5 py-1.5 rounded-lg text-sm font-medium
                        hover:bg-lion/90 transition-all duration-300"
             >
               Contact
