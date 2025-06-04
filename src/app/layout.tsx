@@ -7,3 +7,18 @@ import { Toaster } from 'sonner';
   <Footer />
   <Toaster position="top-center" />
 </> 
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body>
+        {children}
+        <Toaster richColors position="top-center" />
+      </body>
+    </html>
+  );
+} 

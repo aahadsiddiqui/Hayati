@@ -132,8 +132,8 @@ const BookingModal = ({ isOpen, onClose, packageSummary }: BookingModalProps) =>
                 <div className="space-y-2">
                   {/* Shisha Details */}
                   <div className="flex justify-between text-sm">
-                    <span>{packageSummary.selectedHeads[0]?.quantity || 3}x Regular Head</span>
-                    <span>${(packageSummary.selectedHeads[0]?.quantity || 3) * 100}</span>
+                    <span>{HEAD_OPTIONS.find(h => h.type === packageSummary.selectedHeads[0]?.type)?.name}x {packageSummary.selectedHeads[0]?.quantity || 3}</span>
+                    <span>${(HEAD_OPTIONS.find(h => h.type === packageSummary.selectedHeads[0]?.type)?.price || 0) * (packageSummary.selectedHeads[0]?.quantity || 3)}</span>
                   </div>
                   
                   {/* Duration */}
@@ -146,7 +146,7 @@ const BookingModal = ({ isOpen, onClose, packageSummary }: BookingModalProps) =>
                   {packageSummary.hours > 3 && (
                     <div className="flex justify-between text-sm text-prussian/70">
                       <span>Extra Hours Charge</span>
-                      <span>+${(packageSummary.hours - 3) * 100}</span>
+                      <span>+${(packageSummary.hours - 3) * 150}</span>
                     </div>
                   )}
 

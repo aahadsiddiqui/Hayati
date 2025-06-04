@@ -22,33 +22,31 @@ export const HEAD_OPTIONS: HeadOption[] = [
   {
     type: 'regular',
     name: 'Regular Head',
-    price: 100,
+    price: 150,
     description: 'Classic shisha experience'
   },
   {
     type: 'fruit',
     name: 'Fruit Head',
-    price: 110,
+    price: 160,
     description: 'Premium fruit-topped experience'
   },
   {
     type: 'half',
     name: 'Half & Half',
-    price: 105,
+    price: 155,
     description: 'Best of both worlds'
   }
 ];
 
 const CostCalculator = () => {
-  const [selectedHeads, setSelectedHeads] = useState<ShishaSelection[]>([]);
+  const [selectedHeadType, setSelectedHeadType] = useState<HeadType>('regular');
+  const [shishaQuantity, setShishaQuantity] = useState<number>(3);
   const [hours, setHours] = useState<number>(3);
   const [guestCount, setGuestCount] = useState<number>(1);
   const [showError, setShowError] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [date, setDate] = useState<Date>();
-  const [shishaInput, setShishaInput] = useState<string>('3');
-
-  const totalShishas = selectedHeads.reduce((sum, item) => sum + item.quantity, 0);
 
   // Function to get recommended shishas based on guest count
   const getRecommendedShishas = (guests: number) => {
@@ -63,52 +61,26 @@ const CostCalculator = () => {
     setHours(parseInt(e.target.value));
   };
 
-  // Handle adding/removing shisha heads
+  // Handle head type selection (single choice)
   const handleHeadSelection = (type: HeadType) => {
-    setSelectedHeads(prev => {
-      const existing = prev.find(item => item.type === type);
-      if (existing) {
-        // Remove if clicking again
-        return prev.filter(item => item.type !== type);
-      }
-      // Add new head type
-      return [...prev, { type, quantity: 1 }];
-    });
-  };
-
-  // Update quantity for a specific head type
-  const updateQuantity = (type: HeadType, newQuantity: number) => {
-    if (newQuantity < 1) {
-      setSelectedHeads(prev => prev.filter(item => item.type !== type));
-    } else {
-      setSelectedHeads(prev => 
-        prev.map(item => 
-          item.type === type 
-            ? { ...item, quantity: newQuantity }
-            : item
-        )
-      );
-    }
+    setSelectedHeadType(type);
   };
 
   // Calculate total cost
   const calculateTotal = () => {
-    if (selectedHeads.length === 0) {
+    if (!selectedHeadType || shishaQuantity < 1) {
       return {
         subtotal: 0,
         tax: 0,
         total: 0
       };
     }
-    
-    const numShishas = parseInt(shishaInput) || 3;
-    const basePrice = HEAD_OPTIONS.find(h => h.type === 'regular')?.price! * numShishas;
+    const headOption = HEAD_OPTIONS.find(h => h.type === selectedHeadType);
+    const basePrice = (headOption?.price || 0) * shishaQuantity;
     const extraHours = Math.max(0, hours - 3);
-    const extraHoursCost = extraHours * 100;
-    
+    const extraHoursCost = extraHours * 150;
     const subtotal = basePrice + extraHoursCost;
     const tax = subtotal * 0.13;
-    
     return {
       subtotal,
       tax,
@@ -117,13 +89,12 @@ const CostCalculator = () => {
   };
 
   useEffect(() => {
-    const numShishas = parseInt(shishaInput) || 3;
-    if (numShishas < 3) {
+    if (shishaQuantity < 3) {
       setShowError('Minimum 3 Shishas for Bookings');
     } else {
       setShowError('');
     }
-  }, [shishaInput]);
+  }, [shishaQuantity]);
 
   return (
     <section id="calculator-section" className="bg-gradient-to-b from-platinum to-white py-20">
@@ -155,7 +126,7 @@ const CostCalculator = () => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     className={`p-6 rounded-xl border-2 transition-all duration-300 flex flex-col items-center
-                      ${selectedHeads.some(item => item.type === option.type) 
+                      ${selectedHeadType === option.type 
                         ? 'border-lion bg-lion/10 text-prussian shadow-lg' 
                         : 'border-prussian/20 hover:border-lion/50'}`}
                     onClick={() => handleHeadSelection(option.type)}
@@ -212,17 +183,10 @@ const CostCalculator = () => {
                       <input
                         type="number"
                         min="3"
-                        value={shishaInput}
+                        value={shishaQuantity}
                         onChange={(e) => {
-                          const inputValue = e.target.value;
-                          setShishaInput(inputValue);
-                          
-                          const numValue = parseInt(inputValue);
-                          if (!isNaN(numValue)) {
-                            setSelectedHeads([{ type: 'regular', quantity: numValue }]);
-                          } else {
-                            setSelectedHeads([{ type: 'regular', quantity: 3 }]);
-                          }
+                          const numValue = parseInt(e.target.value);
+                          setShishaQuantity(isNaN(numValue) ? 3 : numValue);
                         }}
                         className="w-full p-3 border-2 border-prussian/20 rounded-lg focus:border-lion
                                  focus:outline-none focus:ring-2 focus:ring-lion/50"
@@ -265,8 +229,8 @@ const CostCalculator = () => {
               
               <div className="space-y-4 mb-8">
                 <div className="flex justify-between items-center">
-                  <span>Regular Head</span>
-                  <span className="font-semibold">x{parseInt(shishaInput) || 3}</span>
+                  <span>{HEAD_OPTIONS.find(h => h.type === selectedHeadType)?.name}</span>
+                  <span className="font-semibold">x{shishaQuantity}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span>Duration</span>
@@ -275,7 +239,7 @@ const CostCalculator = () => {
                 {hours > 3 && (
                   <div className="flex justify-between items-center text-sm text-platinum/80">
                     <span>Extra Hours Charge</span>
-                    <span>+${(hours - 3) * 100}</span>
+                    <span>+${(hours - 3) * 150}</span>
                   </div>
                 )}
                 <div className="border-t border-platinum/20 pt-4 space-y-2">
@@ -325,14 +289,13 @@ const CostCalculator = () => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => {
-                  const numShishas = parseInt(shishaInput) || 3;
-                  if (numShishas >= 3) {
+                  if (shishaQuantity >= 3) {
                     setIsModalOpen(true);
                   }
                 }}
                 className="w-full mt-8 bg-lion text-white py-4 rounded-lg font-medium
                          hover:bg-lion/90 transition-all duration-300"
-                disabled={parseInt(shishaInput) < 3}
+                disabled={shishaQuantity < 3}
               >
                 Book Now
               </motion.button>
@@ -347,8 +310,8 @@ const CostCalculator = () => {
         onClose={() => setIsModalOpen(false)}
         packageSummary={{
           selectedHeads: [{ 
-            type: 'regular', 
-            quantity: parseInt(shishaInput) || 3 
+            type: selectedHeadType, 
+            quantity: shishaQuantity 
           }],
           hours,
           totalCost: calculateTotal(),
