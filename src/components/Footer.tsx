@@ -48,6 +48,11 @@ const Footer = () => {
                   📝 Request a Quote
                 </button>
               </li>
+              <li>
+                <a href="/privacy-policy" className="text-prussian/80 hover:text-lion transition-colors">
+                  🔒 Privacy Policy
+                </a>
+              </li>
             </ul>
           </div>
 
