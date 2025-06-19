@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 const steps = [
   {
     title: "Submit an Online Inquiry",
-    description: "Get started by filling out our inquiry form or call us at +1 (647)-835-9672",
+    description: "Get started by filling out our inquiry form or call us at +1 (647)-835-9672 or +1 (647)-571-3507",
     icon: "📝"
   },
   {
