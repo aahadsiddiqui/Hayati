@@ -71,6 +71,14 @@ const Footer = () => {
               </li>
               <li>
                 <a 
+                  href="tel:+16475713507" 
+                  className="hover:text-lion transition-colors flex items-center gap-2"
+                >
+                  📞 +1 (647)-571-3507
+                </a>
+              </li>
+              <li>
+                <a 
                   href="mailto:info@hayaticatering.com" 
                   className="hover:text-lion transition-colors flex items-center gap-2"
                 >

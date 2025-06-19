@@ -1,5 +1,5 @@
 export const siteConfig = {
-  name: 'Hayati Catering',
+  name: 'Hayati Shisha Catering',
   description: 'Premium Shisha Catering Services for Your Special Events',
   logo: '/logo.jpg',
   socials: {
@@ -8,7 +8,7 @@ export const siteConfig = {
     whatsapp: 'https://wa.me/yourphonenumber',
   },
   contact: {
-    phone: '+1234567890',
+    phone: ['+1 (647)-835-9672', '+1 (647)-571-3507'],
     email: 'info@hayaticatering.com',
     address: 'Your Business Address',
   },
