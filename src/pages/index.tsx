@@ -15,6 +15,9 @@ export default function Home() {
       <CostCalculator />
       <ContactForm />
       <Footer />
+      <div className="text-xs text-prussian/60 text-center mt-4 mb-8">
+        Serving the GTA: Ajax, Oshawa, Whitby, Markham, Toronto, Vaughan, Courtice, Etobicoke, King City, Pickering, North York, Bowmanville, Mississauga, Richmond Hill, East Gwillimbury, and more!
+      </div>
     </main>
   );
 } 
