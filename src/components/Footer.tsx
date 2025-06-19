@@ -18,7 +18,7 @@ const Footer = () => {
           <div className="space-y-4">
             <Image
               src="/images/logo.jpg"
-              alt="Hayati Shisha Logo"
+              alt="Hayati Shisha Catering"
               width={80}
               height={80}
               className="rounded-full"

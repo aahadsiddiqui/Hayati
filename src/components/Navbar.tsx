@@ -25,7 +25,7 @@ const Navbar = () => {
           >
             <Image
               src="/images/logo.jpg"
-              alt="Hayati Shisha Logo"
+              alt="Hayati Shisha Catering"
               width={64}
               height={64}
               className="h-12 w-24"
